@@ -3,3 +3,6 @@
 # affect any change needed by relationships being formed
 # This script should be idempotent.
 juju-log $JUJU_REMOTE_UNIT joined
+# Export the details for talking to this instances
+relation-set hostname="`unit-get private-address`"
+relation-set port="4242"

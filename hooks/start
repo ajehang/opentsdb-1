@@ -2,3 +2,6 @@
 # Here put anything that is needed to start the service.
 # Note that currently this is run directly after install
 # i.e. 'service apache2 start'
+# your temporary directory uses tmpfs
+
+# Should this check if the relation is already set and if so spawn the process?

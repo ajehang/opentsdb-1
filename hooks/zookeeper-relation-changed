@@ -1,0 +1,16 @@
+#!/bin/bash
+# This must be renamed to the name of the relation. The goal here is to
+# affect any change needed by relationships being formed, modified, or broken
+# This script should be idempotent.
+juju-log $JUJU_REMOTE_UNIT modified its settings
+juju-log Relation settings:
+relation-get
+juju-log Relation members:
+relation-list
+zk_host=`relation-get private-address`
+zk_port=`relation-get port`
+[ -z "$zk_host" ] && exit 0
+cd /opt/opentsdb
+open-port 4242 # web port for talking to tsd
+tsdtmp=${TMPDIR-'/tmp'}/tsd
+start-stop-daemon -b -m -d $(pwd) --start --pidfile /var/run/opentsdb.pid --exec $(pwd)/build/tsdb -- tsd --port=4242 --staticroot=build/staticroot --cachedir="$tsdtmp" --zkquorum=$zk_host:$zk_port

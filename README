@@ -1,0 +1,37 @@
+This charm deploys http://opentsdb.net from its git repository, on top of a
+juju provided hbase cluster.
+
+To use it, you need to deploy an hbase cluster, create a relation between the hbase quorum zookeeper and opentsdb and finally expose opentsdb.
+
+For instance (using the example-hadoop.yaml included with this charm)::
+  juju deploy hbase hbase-master
+  juju deploy hbase hbase-regioncluster-01
+  juju deploy zookeeper hbase-zookeeper
+  juju add-relation hbase-master hbase-zookeeper
+  juju add-relation hbase-regioncluster-01 hbase-zookeeper
+  juju deploy --config example-hadoop.yaml hadoop hdfs-namenode
+  juju deploy --config example-hadoop.yaml hadoop hdfs-datacluster-01
+  juju add-relation hdfs-namenode:namenode hdfs-datacluster-01:datanode
+  juju add-relation hdfs-namenode:namenode hbase-master:namenode
+  juju add-relation hdfs-namenode:namenode hbase-regioncluster-01:namenode
+  juju add-relation hbase-master:master hbase-regioncluster-01:regionserver
+  # XXX: Here, you need to manually create the schema from a hbase node. e.g.
+  juju ssh hbase-master
+  exec hbase shell <<EOF
+    create 'tsdb-uid',
+        {NAME => 'id', COMPRESSION => 'NONE'},
+	{NAME => 'name', COMPRESSION => 'NONE'}
+
+    create 'tsdb',
+      {NAME => 't', VERSIONS => 1, COMPRESSION => 'NONE', BLOOMFILTER => 'ROW'}
+  EOF
+  juju deploy opentsdb
+  juju add-relation opentsdb hbase-zookeeper
+  juju expose opentsdb
+
+Once that is done, you can use juju ssh to shell in and run more commands.
+opentsdb is installed in /opt/opentsdb, and started and stopped via
+start-stop-daemon by Juju itself. See the zookeeper-relation-changed hook for
+more information.
+
+You can put apache or haproxy in front of opentsdb - it exports the http interface.

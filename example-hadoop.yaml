@@ -1,0 +1,4 @@
+    hdfs-namenode:
+        hbase: True
+    hdfs-datacluster-01:
+        hbase: True

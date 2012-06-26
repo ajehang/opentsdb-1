@@ -2,4 +2,15 @@
 # Here do anything needed to install the service
 # i.e. apt-get install -y foo  or  bzr branch http://myserver/mycode /srv/webroot
 
-apt-get install -y opentsdb
+set -eux # -x for verbose logging to juju debug-log
+juju-log "Installing build dependencies"
+apt-get install -y build-essential automake autoconf gnuplot default-jdk git
+juju-log "Using git to clone opentsdb"
+cd /opt
+[ -d opentsdb ] && (cd opentsdb && git pull) || git clone git://github.com/stumbleupon/opentsdb.git
+juju-log "building."
+cd opentsdb
+./build.sh
+tsdtmp=${TMPDIR-'/tmp'}/tsd
+# For best performance, make sure 
+mkdir -p "$tsdtmp"

@@ -3,12 +3,9 @@ summary: An openTSDB charm.
 description: |
   Deploys from git per http://opentsdb.net/getting-started.html on top of a
   charmed hadoop cluster.
-provides:
-  relation-name:
-    interface: interface-name
 requires:
-  relation-name:
-    interface: interface-name
-peers:
-  relation-name:
-    interface: interface-name
+  zookeeper:
+    interface: zookeeper
+provides:
+  opentsdb:
+    interface: http
