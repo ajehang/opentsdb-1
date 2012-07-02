@@ -11,6 +11,6 @@ zk_host=`relation-get private-address`
 zk_port=`relation-get port`
 [ -z "$zk_host" ] && exit 0
 cd /opt/opentsdb
-open-port 4242 # web port for talking to tsd
 tsdtmp=${TMPDIR-'/tmp'}/tsd
-start-stop-daemon -b -m -d $(pwd) --start --pidfile /var/run/opentsdb.pid --exec $(pwd)/build/tsdb -- tsd --port=4242 --staticroot=build/staticroot --cachedir="$tsdtmp" --zkquorum=$zk_host:$zk_port
+start-stop-daemon -b -m -d $(pwd) --start -c opentsdb --pidfile /var/run/opentsdb.pid --exec $(pwd)/build/tsdb -- tsd --port=4242 --staticroot=build/staticroot --cachedir="$tsdtmp" --zkquorum=$zk_host:$zk_port
+open-port 4242 # web port for talking to tsd

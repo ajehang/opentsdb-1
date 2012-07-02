@@ -7,10 +7,13 @@ juju-log "Installing build dependencies"
 apt-get install -y build-essential automake autoconf gnuplot default-jdk git
 juju-log "Using git to clone opentsdb"
 cd /opt
-[ -d opentsdb ] && (cd opentsdb && git pull) || git clone git://github.com/stumbleupon/opentsdb.git
+[ -d opentsdb ] && (cd opentsdb && git pull) || git clone https://github.com/stumbleupon/opentsdb.git
 juju-log "building."
 cd opentsdb
 ./build.sh
 tsdtmp=${TMPDIR-'/tmp'}/tsd
-# For best performance, make sure 
+adduser --system --quiet opentsdb
+addgroup --system --quiet opentsdb
+adduser opentsdb opentsdb
 mkdir -p "$tsdtmp"
+chown opentsdb:opentsdb "$tsdtmp"
