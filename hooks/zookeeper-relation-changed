@@ -12,5 +12,11 @@ zk_port=`relation-get port`
 [ -z "$zk_host" ] && exit 0
 cd /opt/opentsdb
 tsdtmp=${TMPDIR-'/tmp'}/tsd
-start-stop-daemon -b -m -d $(pwd) --start -c opentsdb --pidfile /var/run/opentsdb.pid --exec $(pwd)/build/tsdb -- tsd --port=4242 --staticroot=build/staticroot --cachedir="$tsdtmp" --zkquorum=$zk_host:$zk_port
+juju-log "Installing an upstart job."
+upstartjob=/etc/init/opentsdb.conf
+echo start on runlevel [2345] > $upstartjob
+echo stop on runlevel [016] >> $upstartjob
+echo pre-start exec start-stop-daemon -b -m -d /opt/opentsdb --start -c opentsdb --pidfile /var/run/opentsdb.pid --exec /opt/opentsdb/build/tsdb -- tsd --port=4242 --staticroot=build/staticroot --cachedir="$tsdtmp" --zkquorum=$zk_host:$zk_port >> $upstartjob
+echo post-stop exec start-stop-daemon --stop --oknodo --pidfile /var/run/opentsdb.pid >> $upstartjob
+service opentsdb start
 open-port 4242 # web port for talking to tsd
