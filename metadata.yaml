@@ -3,7 +3,7 @@ summary: An openTSDB charm.
 description: |
   Deploys from git per http://opentsdb.net/getting-started.html on top of a
   charmed hadoop cluster.
-maintainer: Robert Collins <robert.collins@canonical.com>
+maintainer: Mark Mims <mark.mims@canonical.com>
 requires:
   zookeeper:
     interface: zookeeper
